@@ -28,7 +28,7 @@
 
 enum CW_waterInfo
 {
-	waterArea,
+	DynamicArea:waterArea,
 	Float:waterMinX,
 	Float:waterMaxX,
 	Float:waterMinY,
@@ -47,7 +47,7 @@ enum CW_playerWaterInfo
 	bool:playerUnderWater,
 	playerWaterID,
 	playerSwimStyle,
-	playerSwimObj,
+	DynamicObject:playerSwimObj,
 	bool:playerOxygenBarVisible,
 	Float:playerOxygenValue,
 }
@@ -114,7 +114,7 @@ stock CreateWater(Float:minx, Float:miny, Float:maxx, Float: maxy, Float:z, Floa
 
 	for(new i=0; i<xWayCount; i++)
 	{
-		new CW_shit = CreateDynamicObject(2691, minx + ((2.13943 * i))*xWay, miny, z, -90.0, 0.0, 0.0, world, interior);
+		new DynamicObject:CW_shit = CreateDynamicObject(2691, minx + ((2.13943 * i))*xWay, miny, z, -90.0, 0.0, 0.0, world, interior);
 		if(waterInfo[waterCount][waterType] == WATER_TYPE_NORMAL) SetDynamicObjectMaterial(CW_shit, 0, 19603, "ballyswater", "waterclear256");
 		if(waterInfo[waterCount][waterType] == WATER_TYPE_LIGHT) SetDynamicObjectMaterial(CW_shit, 0, 19603, "ballyswater", "waterclear256", 0xFFFFFFFF);
 		if(waterInfo[waterCount][waterType] == WATER_TYPE_DARK) SetDynamicObjectMaterial(CW_shit, 0, 19603, "ballyswater", "waterclear256", 0xFFAAAAAA);
@@ -130,7 +130,7 @@ stock CreateWater(Float:minx, Float:miny, Float:maxx, Float: maxy, Float:z, Floa
 
 		for(new j=1; j<yWayCount; j++)
 		{
-			new CW_shit1 = CreateDynamicObject(2691, minx + ((2.13943 * i))*xWay, miny + ((1.908086 * j))*yWay, z, -90.0, 0.0, 0.0, world, interior);
+			new DynamicObject:CW_shit1 = CreateDynamicObject(2691, minx + ((2.13943 * i))*xWay, miny + ((1.908086 * j))*yWay, z, -90.0, 0.0, 0.0, world, interior);
 			if(waterInfo[waterCount][waterType] == WATER_TYPE_NORMAL) SetDynamicObjectMaterial(CW_shit1, 0, 19603, "ballyswater", "waterclear256");
 			if(waterInfo[waterCount][waterType] == WATER_TYPE_LIGHT) SetDynamicObjectMaterial(CW_shit1, 0, 19603, "ballyswater", "waterclear256", 0xFFFFFFFF);
 			if(waterInfo[waterCount][waterType] == WATER_TYPE_DARK) SetDynamicObjectMaterial(CW_shit1, 0, 19603, "ballyswater", "waterclear256", 0xFFAAAAAA);
@@ -266,22 +266,22 @@ SetPlayerLookAt(playerid, Float:X, Float:Y) // credits to someone in samp forums
 CreateCustomOxygenBarForPlayer(playerid)
 {
 	oxygenBarBG[playerid] = CreatePlayerTextDraw(playerid, 577.000000, 58.000000, "_");
-	PlayerTextDrawAlignment(playerid, oxygenBarBG[playerid], 2);
+	PlayerTextDrawAlignment(playerid, oxygenBarBG[playerid], TEXT_DRAW_ALIGN_CENTER);
 	PlayerTextDrawLetterSize(playerid, oxygenBarBG[playerid], 0.400000, 0.499993);
-	PlayerTextDrawUseBox(playerid, oxygenBarBG[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, oxygenBarBG[playerid], 255);
+	PlayerTextDrawUseBox(playerid, oxygenBarBG[playerid], true);
+	PlayerTextDrawBoxColour(playerid, oxygenBarBG[playerid], 255);
 	PlayerTextDrawTextSize(playerid, oxygenBarBG[playerid], -15.000000, 59.000000);
 
 	oxygenBarBGEx[playerid] = CreatePlayerTextDraw(playerid, 549.000000, 59.500000, "_");
 	PlayerTextDrawLetterSize(playerid, oxygenBarBGEx[playerid], 0.400000, 0.199993);
-	PlayerTextDrawUseBox(playerid, oxygenBarBGEx[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, oxygenBarBGEx[playerid], 0x7998C1FF);
+	PlayerTextDrawUseBox(playerid, oxygenBarBGEx[playerid], true);
+	PlayerTextDrawBoxColour(playerid, oxygenBarBGEx[playerid], 0x7998C1FF);
 	PlayerTextDrawTextSize(playerid, oxygenBarBGEx[playerid], 605.000000, 0.000000);
 
 	oxygenBarProg[playerid] = CreatePlayerTextDraw(playerid, 549.000000, 59.500000, "_");
 	PlayerTextDrawLetterSize(playerid, oxygenBarProg[playerid], 0.400000, 0.199993);
-	PlayerTextDrawUseBox(playerid, oxygenBarProg[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, oxygenBarProg[playerid], 0xACCBF1FF);
+	PlayerTextDrawUseBox(playerid, oxygenBarProg[playerid], true);
+	PlayerTextDrawBoxColour(playerid, oxygenBarProg[playerid], 0xACCBF1FF);
 	PlayerTextDrawTextSize(playerid, oxygenBarProg[playerid], 605.000000, 0.000000);
 
 	return 1;
@@ -319,7 +319,7 @@ UpdateCustomOxygenBarForPlayer(playerid, Float:ox_value)
 	return 1;
 }
 
-public OnPlayerEnterDynamicArea(playerid, areaid)
+public OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid)
 {
 	new i = Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID);
 	if(0 <= i < MAX_WATERS)
@@ -333,7 +333,7 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
 		return 1;
 
 	}
-	return CallLocalFunction("CW_OnPlayerEnterDynamicArea", "ii", playerid, areaid);
+	return CallLocalFunction("CW_OnPlayerEnterDynamicArea", "ii", playerid, _:areaid);
 }
 
 #if defined _ALS_OnPlayerEnterDynamicArea
@@ -344,7 +344,7 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
 #define OnPlayerEnterDynamicArea CW_OnPlayerEnterDynamicArea
 forward CW_OnPlayerEnterDynamicArea(playerid, areaid);
 
-public OnPlayerLeaveDynamicArea(playerid, areaid)
+public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid)
 {
 	new i = Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID);
 	if(0 <= i < MAX_WATERS)
@@ -360,7 +360,7 @@ public OnPlayerLeaveDynamicArea(playerid, areaid)
 		return 1;
 
 	}
-	return CallLocalFunction("CW_OnPlayerLeaveDynamicArea", "ii", playerid, areaid);
+	return CallLocalFunction("CW_OnPlayerLeaveDynamicArea", "ii", playerid, _:areaid);
 }
 
 #if defined _ALS_OnPlayerLeaveDynamicArea
@@ -423,7 +423,7 @@ public OnPlayerUpdate(playerid)
 			}
 		}
 
-		new k, ud,lr;
+		new KEY:k, ud,lr;
 		GetPlayerKeys(playerid,k,ud,lr);
 		new Float:v_x,Float:v_y,Float:v_z,
 		Float:xv,Float:yv,Float:zv;
@@ -441,7 +441,7 @@ public OnPlayerUpdate(playerid)
 			|| GetPlayerSwimStyle(playerid) == SWIM_STYLE_IDLE_ON_WATER)
 			{
 				v_z = -0.22;
-				ApplyAnimation(playerid,"SWIM","Swim_Dive_Under", 4.1, 0, 1, 1, 0, 0, 1);
+				ApplyAnimation(playerid,"SWIM","Swim_Dive_Under", 4.1, false, true, true, false, 0, SYNC_ALL);
 				playerWater[playerid][playerSwimStyle] = SWIM_STYLE_DIVE_UNDER_WATER;
 				if(IsValidDynamicObject(playerWater[playerid][playerSwimObj])) DestroyDynamicObject(playerWater[playerid][playerSwimObj]);
 			}
@@ -466,13 +466,13 @@ public OnPlayerUpdate(playerid)
 			|| GetPlayerSwimStyle(playerid) == SWIM_STYLE_MOVE_FAST_ON_WATER
 			|| z >= waterInfo[playerWater[playerid][playerWaterID]][waterZ] - 0.46)
 			{
-				ApplyAnimation(playerid,"SWIM","Swim_Tread", 6.1, 1, 1, 1, 1, 0, 1);
+				ApplyAnimation(playerid,"SWIM","Swim_Tread", 6.1, true, true, true, true, 0, SYNC_ALL);
 				playerWater[playerid][playerSwimStyle] = SWIM_STYLE_IDLE_ON_WATER;
 			}
 
 			if(GetPlayerSwimStyle(playerid) == SWIM_STYLE_DIVE_UNDER_WATER || GetPlayerSwimStyle(playerid) == SWIM_STYLE_MOVE_UNDER_WATER || z < waterInfo[playerWater[playerid][playerWaterID]][waterZ] - 0.46)
 			{
-				ApplyAnimation(playerid,"SWIM","Swim_Glide", 6.1, 1, 1, 1, 1, 0, 1);
+				ApplyAnimation(playerid,"SWIM","Swim_Glide", 6.1, true, true, true, true, 0, SYNC_ALL);
 				playerWater[playerid][playerSwimStyle] = SWIM_STYLE_COMING_UP;
 			}
 		}
@@ -488,19 +488,19 @@ public OnPlayerUpdate(playerid)
 			{
 				if(GetPlayerSwimStyle(playerid) == SWIM_STYLE_IDLE_ON_WATER || GetPlayerSwimStyle(playerid) == SWIM_STYLE_MOVE_ON_WATER)
 				{
-					ApplyAnimation(playerid,"SWIM","SWIM_crawl", 6.1, 1, 1, 1, 1, 0, 1);
+					ApplyAnimation(playerid,"SWIM","SWIM_crawl", 6.1, true, true, true, true, 0, SYNC_ALL);
 					playerWater[playerid][playerSwimStyle] = SWIM_STYLE_MOVE_FAST_ON_WATER;
 				}
 
 				if(GetPlayerSwimStyle(playerid) == SWIM_STYLE_DIVE_UNDER_WATER || GetPlayerSwimStyle(playerid) == SWIM_STYLE_COMING_UP)
 				{
-					ApplyAnimation(playerid,"SWIM","Swim_Under", 6.1, 1, 1, 1, 1, 0, 1);
+					ApplyAnimation(playerid,"SWIM","Swim_Under", 6.1, true, true, true, true, 0, SYNC_ALL);
 					playerWater[playerid][playerSwimStyle] = SWIM_STYLE_MOVE_UNDER_WATER;
 				}
 			}
 			else if(GetPlayerSwimStyle(playerid) == SWIM_STYLE_IDLE_ON_WATER || GetPlayerSwimStyle(playerid) == SWIM_STYLE_MOVE_FAST_ON_WATER)
 			{
-				ApplyAnimation(playerid,"SWIM","Swim_Breast", 6.1, 1, 1, 1, 1, 0, 1);
+				ApplyAnimation(playerid,"SWIM","Swim_Breast", 6.1, true, true, true, true, 0, SYNC_ALL);
 				playerWater[playerid][playerSwimStyle] = SWIM_STYLE_MOVE_ON_WATER;
 			}
 		}
@@ -559,7 +559,7 @@ public UpdateCustomOxygenForPlayers()
 #define OnPlayerUpdate CW_OnPlayerUpdate
 forward CW_OnPlayerUpdate(playerid);
 
-public OnPlayerDeath(playerid, killerid, reason)
+public OnPlayerDeath(playerid, killerid, WEAPON:reason)
 {	
 	playerWater[playerid][playerInWater] = false;
 	playerWater[playerid][playerUnderWater] = false;
@@ -625,17 +625,17 @@ forward CW_OnFilterScriptExit(playerid);
 public OnGameModeInit()
 {
 	waterTD = TextDrawCreate(-20.000000,2.000000,"|");
-	TextDrawUseBox(waterTD,1);
-	TextDrawBoxColor(waterTD,0x22446644);
+	TextDrawUseBox(waterTD, true);
+	TextDrawBoxColour(waterTD,0x22446644);
 	TextDrawTextSize(waterTD,660.000000,22.000000);
-	TextDrawAlignment(waterTD,0);
-	TextDrawBackgroundColor(waterTD,0x22446644);
-	TextDrawFont(waterTD,3);
+	TextDrawAlignment(waterTD, TEXT_DRAW_ALIGN_LEFT);
+	TextDrawBackgroundColour(waterTD,0x22446644);
+	TextDrawFont(waterTD,TEXT_DRAW_FONT_3);
 	TextDrawLetterSize(waterTD,1.000000,52.200000);
-	TextDrawColor(waterTD,0x22446644);
-	TextDrawSetOutline(waterTD,1);
-	TextDrawSetProportional(waterTD,1);
-	TextDrawSetShadow(waterTD,1);
+	TextDrawColour(waterTD,0x22446644);
+	TextDrawSetOutline(waterTD,true);
+	TextDrawSetProportional(waterTD,true);
+	TextDrawSetShadow(waterTD,true);
 
 	for(new i=0; i<MAX_WATERS; i++) waterInfo[i][waterAvailable] = 1;
 	waterOxygenTimer = SetTimer("UpdateCustomOxygenForPlayers", 500, true);
